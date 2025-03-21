@@ -1,4 +1,4 @@
-![Firebase Genkit + Voiceflow](https://github.com/xavidop/genkitx-voiceflow/blob/main/assets/genkitx-voiceflow.png?raw=true)
+![Firebase Genkit + Voiceflow](https://github.com/xavidop/genkitx-voiceflow/blob/main/assets/genkit-voiceflow.png?raw=true)
 
 <h1 align="center">
    Firebase Genkit <> Voiceflow Plugin
