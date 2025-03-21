@@ -24,6 +24,27 @@
 **`genkitx-voiceflow`** is a community plugin for using Voiceflow Knowledge base in
 [Firebase Genkit](https://github.com/firebase/genkit). Built by [**Xavier Portilla Edo**](https://github.com/xavidop).
 
+<!-- TOC -->
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Indexer](#indexer)
+    - [Basic examples](#basic-examples)
+    - [Within a flow](#within-a-flow)
+  - [Retriever](#retriever)
+    - [Basic examples](#basic-examples-1)
+    - [Within a flow](#within-a-flow-1)
+- [Examples](#examples)
+- [Feature supported from Voiceflow Knowledge Base](#feature-supported-from-voiceflow-knowledge-base)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+- [Need support?](#need-support)
+- [Credits](#credits)
+- [License](#license)
+
+<!-- /TOC -->
+
 ## Installation
 
 Install the plugin in your project with your favorite package manager:
@@ -31,9 +52,7 @@ Install the plugin in your project with your favorite package manager:
 - `npm install genkitx-voiceflow`
 - `pnpm add genkitx-voiceflow`
 
-## Usage
-
-### Configuration
+## Configuration
 
 To use the plugin, you need to configure it with your Voiceflow API key. You can do this by calling the `genkit` function:
 
@@ -51,14 +70,79 @@ const ai = genkit({
           apiKey: process.env.VOICEFLOW_API_KEY!,
         }
       },
+      {
+        name: 'indexer',
+        clientParams: {
+          apiKey: process.env.VOICEFLOW_API_KEY!,
+        }
+      },
     ])
   ],
 });
 ```
 
-### Basic examples
+## Usage
 
-The simplest way to call the text generation model is by using the helper function `retrieve`:
+The plugin provides two main functionalities: `index` and `retrieve`. You can use them directly or within a Genkit flow.
+
+### Indexer
+
+Indexer is used to index documents in the Voiceflow Knowledge Base. Voiceflow Knowledge Base only works with documents that contain a `media` field with a `url` property. The URL could be a link to a website or to a local file with `file://`.
+
+#### Basic examples
+
+The simplest way to call the indexer is by using the helper function `index`:
+
+```typescript
+const voiceflowIndexer = voiceflowIndexerRef({
+  name: 'indexer'
+});
+
+const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];
+await ai.index({ indexer: voiceflowIndexer, documents });
+```
+
+
+#### Within a flow
+
+```typescript
+// ...configure Genkit (as shown above)...
+
+export const indexerFlow = ai.defineFlow(
+  {
+    name: 'indexerFlow',
+    inputSchema: z.string(),
+    outputSchema: z.string(),
+  },
+  async () => {
+
+   const voiceflowIndexer = voiceflowIndexerRef({
+     name: 'indexer'
+   });
+
+   const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];
+   await ai.index({ indexer: voiceflowIndexer, documents });
+
+   return 'done';
+   
+  }
+);
+```
+
+
+### Retriever
+
+A retriever is used to retrieve documents from the Voiceflow Knowledge Base. You can pass a query and options to the retriever. The options object can contain the following properties:
+1. `querySettings`: An object with the following properties:
+   - `model`: The model to use for the query. The default is `gpt-4o`.
+   - `temperature`: The temperature to use for the query. The default is `0.7`.
+   - `system`: The system prompt to use for the query. The default is `''`.
+2. `k`: The number of documents to retrieve. The default is `5`.
+3. `filters`: filters to apply to the query. The default is `[]`.
+
+#### Basic examples
+
+The simplest way to call the retriever is by using the helper function `retrieve`:
 
 ```typescript
 const voiceflowRetriever = voiceflowRetrieverRef({
@@ -68,11 +152,11 @@ const voiceflowRetriever = voiceflowRetrieverRef({
 const docs = await ai.retrieve({ retriever: voiceflowRetriever, query: subject, 
 options:{
   querySettings: { model: 'gpt-4o', temperature: 0.7 },
-  limit: 5
+  k: 5
 }});
 ```
 
-### Within a flow
+#### Within a flow
 
 ```typescript
 // ...configure Genkit (as shown above)...
@@ -92,7 +176,7 @@ export const retrieverFlow = ai.defineFlow(
    const docs = await ai.retrieve({ retriever: voiceflowRetriever, query: subject, 
     options:{
      querySettings: { model: 'gpt-4o', temperature: 0.7 },
-     limit: 5
+     k: 5
    }});
    
    const llmResponse = await ai.generate({
@@ -104,8 +188,11 @@ export const retrieverFlow = ai.defineFlow(
 );
 ```
 
-
 For more detailed examples and the explanation of other functionalities, refer to the [official Genkit documentation](https://firebase.google.com/docs/genkit/get-started).
+
+## Examples
+
+You can find more examples in the [examples](https://github.com/xavidop/genkitx-voiceflow/blob/main/examples/) folder.
 
 ## Feature supported from Voiceflow Knowledge Base
 

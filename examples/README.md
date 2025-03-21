@@ -1,4 +1,4 @@
-# Manual Test for 3P Genkit Plugins with SDK `0.9` RC
+# Manual Test for 3P Genkit Plugins with SDK
 
 To run this example:
 
@@ -7,12 +7,5 @@ To run this example:
 3. In this app directory, run:
    ```bash
    npm run build
-   npm run genkit:dev
+   npm run genkit:start
    ```
-4. In another terminal, execute:
-   ```bash
-   genkit flow:run jokeFlow "chicken"
-   ```
-
-> Note: Due to a known issue, testing of flows should be conducted via the CLI via genkit flow:run etc.
-> Tools and other actions can still be inspected in the UI with `genkit ui:start`

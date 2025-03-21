@@ -60,10 +60,9 @@ export function voiceflowRetriever(
         system: options.querySettings?.system ?? "",
       };
 
-      const question =
-        Array.isArray(content.content) && content.content[0]?.text
-          ? content.content[0].text
-          : "";
+      const question = Array.isArray(content.content)
+        ? content.content.map(doc => doc.text).join(" ")
+        : "";
 
       const results = await client.search(
         {

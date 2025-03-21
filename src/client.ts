@@ -66,4 +66,42 @@ export class VoiceflowClient {
     const json = await response.json();
     return json as SearchResult;
   }
+
+  async uploadDocument(document: { type: "url"; url: string } | { type: "file"; file: File }): Promise<void> {
+    const url = "https://api.voiceflow.com/v1/knowledge-base/docs/upload?maxChunkSize=1000";
+    const headers = {
+      accept: "application/json",
+      Authorization: `${this.clientParams.apiKey}`,
+    };
+
+    let fetchOptions;
+    if (document.type === "url") {
+      fetchOptions = {
+        method: "POST",
+        headers: {
+          ...headers,
+          "content-type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          data: {
+            type: "url",
+            url: document.url,
+          },
+        }),
+      };
+    } else {
+      const formData = new FormData();
+      formData.append("file", document.file);
+      fetchOptions = {
+        method: "POST",
+        headers,
+        body: formData,
+      };
+    }
+
+    const response = await fetch(url, fetchOptions);
+    if (!response.ok) {
+      throw new Error(`VoiceflowClient uploadDocument failed: ${response.statusText}`);
+    }
+  }
 }

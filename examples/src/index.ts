@@ -18,7 +18,7 @@ import { startFlowServer } from '@genkit-ai/express';
 import dotenv from 'dotenv';
 import { genkit, z } from 'genkit';
 import openAI, { gpt4o } from 'genkitx-openai';
-import { voiceflow, voiceflowRetrieverRef } from 'genkitx-voiceflow';
+import { voiceflow, voiceflowIndexerRef, voiceflowRetrieverRef } from 'genkitx-voiceflow';
 
 dotenv.config();
 
@@ -28,6 +28,12 @@ const ai = genkit({
     voiceflow([
       {
         name: 'retriever',
+        clientParams: {
+          apiKey: process.env.VOICEFLOW_API_KEY!,
+        }
+      },
+      {
+        name: 'indexer',
         clientParams: {
           apiKey: process.env.VOICEFLOW_API_KEY!,
         }
@@ -52,7 +58,7 @@ export const retrieverFlow = ai.defineFlow(
    const docs = await ai.retrieve({ retriever: voiceflowRetriever, query: subject, 
     options:{
      querySettings: { model: 'gpt-4o', temperature: 0.7 },
-     limit: 5
+     k: 5
    }});
    
    const llmResponse = await ai.generate({
@@ -63,7 +69,27 @@ export const retrieverFlow = ai.defineFlow(
   }
 );
 
+export const indexerFlow = ai.defineFlow(
+  {
+    name: 'indexerFlow',
+    inputSchema: z.string(),
+    outputSchema: z.string(),
+  },
+  async () => {
+
+   const voiceflowIndexer = voiceflowIndexerRef({
+     name: 'indexer'
+   });
+
+   const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];
+   await ai.index({ indexer: voiceflowIndexer, documents });
+
+   return 'done';
+   
+  }
+);
+
 
 startFlowServer({
-  flows: [retrieverFlow],
+  flows: [retrieverFlow, indexerFlow],
 });
