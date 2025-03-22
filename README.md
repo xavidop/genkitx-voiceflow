@@ -65,13 +65,7 @@ const ai = genkit({
     openAI({ apiKey: process.env.OPENAI_API_KEY }),
     voiceflow([
       {
-        name: 'retriever',
-        clientParams: {
-          apiKey: process.env.VOICEFLOW_API_KEY!,
-        }
-      },
-      {
-        name: 'indexer',
+        name: 'kb',
         clientParams: {
           apiKey: process.env.VOICEFLOW_API_KEY!,
         }
@@ -95,7 +89,7 @@ The simplest way to call the indexer is by using the helper function `index`:
 
 ```typescript
 const voiceflowIndexer = voiceflowIndexerRef({
-  name: 'indexer'
+  name: 'kb'
 });
 
 const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];
@@ -117,7 +111,7 @@ export const indexerFlow = ai.defineFlow(
   async () => {
 
    const voiceflowIndexer = voiceflowIndexerRef({
-     name: 'indexer'
+     name: 'kb'
    });
 
    const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];

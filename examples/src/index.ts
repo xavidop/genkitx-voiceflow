@@ -27,13 +27,7 @@ const ai = genkit({
     openAI({ apiKey: process.env.OPENAI_API_KEY }),
     voiceflow([
       {
-        name: 'retriever',
-        clientParams: {
-          apiKey: process.env.VOICEFLOW_API_KEY!,
-        }
-      },
-      {
-        name: 'indexer',
+        name: 'kb',
         clientParams: {
           apiKey: process.env.VOICEFLOW_API_KEY!,
         }
@@ -52,7 +46,7 @@ export const retrieverFlow = ai.defineFlow(
   async (subject) => {
 
    const voiceflowRetriever = voiceflowRetrieverRef({
-     name: 'retriever'
+     name: 'kb'
    });
 
    const docs = await ai.retrieve({ retriever: voiceflowRetriever, query: subject, 
@@ -78,10 +72,10 @@ export const indexerFlow = ai.defineFlow(
   async () => {
 
    const voiceflowIndexer = voiceflowIndexerRef({
-     name: 'indexer'
+     name: 'kb'
    });
 
-   const documents = [{ content: [{ media: { url: 'https://www.voiceflow.com' } }] }];
+   const documents = [{ content: [{ media: { url: 'file:///Users/xavierportillaedo/Downloads/LeadershipPrinciples.pdf' } }] }];
    await ai.index({ indexer: voiceflowIndexer, documents });
 
    return 'done';
