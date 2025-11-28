@@ -17,8 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "@genkit-ai/express": "^1.1.0",
-    "genkit": "^0.9.0 || ^1.0.0",
-    "genkitx-openai": "^0.20.0",
+    "genkit": "^1.24.0",
+    "@genkit-ai/compat-oai": "^1.24.0",
     "genkitx-voiceflow": "file:../",
     "tsx": "^4.19.3"
   },

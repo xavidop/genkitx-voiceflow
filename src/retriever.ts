@@ -2,8 +2,8 @@ import {
   CommonRetrieverOptionsSchema,
   Document,
   retrieverRef,
+  retriever,
 } from "@genkit-ai/ai/retriever";
-import { Genkit } from "genkit";
 import * as z from "zod";
 import { VoiceflowClient } from "./client";
 
@@ -46,9 +46,8 @@ export const voiceflowRetrieverRef = (params: {
 export function voiceflowRetriever(
   name: string,
   client: VoiceflowClient,
-  ai: Genkit,
 ) {
-  return ai.defineRetriever(
+  return retriever(
     {
       name: `voiceflow/${name}`,
       configSchema: VoiceflowRetrieverOptionsSchema,

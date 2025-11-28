@@ -1,5 +1,4 @@
-import { Genkit } from "genkit";
-import { GenkitPlugin, genkitPlugin } from "genkit/plugin";
+import { genkitPluginV2, ResolvableAction } from "genkit/plugin";
 import { voiceflowRetriever, voiceflowRetrieverRef } from "./retriever";
 import { VoiceflowClient, VoiceflowClientParams } from "./client";
 import { voiceflowIndexer, voiceflowIndexerRef } from './indexer';
@@ -21,13 +20,20 @@ export interface VoiceflowPluginParams {
 /**
  * Voiceflow plugin that provides the Voiceflow retriever.
  */
-export function voiceflow(params: VoiceflowPluginParams[]): GenkitPlugin {
-  return genkitPlugin("voiceflow", async (ai: Genkit) => {
-    params.map((i) => {
-      const client = new VoiceflowClient(i.clientParams);
-      voiceflowRetriever(i.name, client, ai);
-      voiceflowIndexer(i.name, client, ai);
-    });
+export function voiceflow(params: VoiceflowPluginParams[]) {
+  return genkitPluginV2({
+    name: "voiceflow",
+    init: async () => {
+      const actions: ResolvableAction[] = [];
+      
+      params.forEach((i) => {
+        const client = new VoiceflowClient(i.clientParams);
+        actions.push(voiceflowRetriever(i.name, client));
+        actions.push(voiceflowIndexer(i.name, client));
+      });
+      
+      return actions;
+    },
   });
 }
 

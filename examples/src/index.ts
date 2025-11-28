@@ -17,8 +17,9 @@
 import { startFlowServer } from '@genkit-ai/express';
 import dotenv from 'dotenv';
 import { genkit, z } from 'genkit';
-import openAI, { gpt4o } from 'genkitx-openai';
+import openAI from '@genkit-ai/compat-oai/openai';
 import { voiceflow, voiceflowIndexerRef, voiceflowRetrieverRef } from 'genkitx-voiceflow';
+import { join } from 'path';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ const ai = genkit({
       },
     ])
   ],
-  model: gpt4o,
+  model: openAI.model('gpt-4o'),
 });
 
 export const retrieverFlow = ai.defineFlow(
@@ -75,7 +76,11 @@ export const indexerFlow = ai.defineFlow(
      name: 'kb'
    });
 
-   const documents = [{ content: [{ media: { url: 'file:///Users/xavierportillaedo/Downloads/LeadershipPrinciples.pdf' } }] }];
+   // Construct path to doc folder relative to project root
+   const docPath = join(__dirname, '..', 'doc', 'git.pdf');
+   const fileUrl = `file://${docPath}`;
+
+   const documents = [{ content: [{ media: { url: fileUrl } }] }];
    await ai.index({ indexer: voiceflowIndexer, documents });
 
    return 'done';
@@ -83,7 +88,31 @@ export const indexerFlow = ai.defineFlow(
   }
 );
 
+export const indexerUrlFlow = ai.defineFlow(
+  {
+    name: 'indexerUrlFlow',
+    inputSchema: z.string(),
+    outputSchema: z.string(),
+  },
+  async () => {
+
+   const voiceflowIndexer = voiceflowIndexerRef({
+     name: 'kb'
+   });
+
+   const documents = [
+     { content: [{ media: { url: 'https://voiceflow.com' } }] },
+     { content: [{ media: { url: 'https://voiceflow.com/pricing' } }] }
+   ];
+   
+   await ai.index({ indexer: voiceflowIndexer, documents });
+
+   return 'URLs indexed successfully';
+   
+  }
+);
+
 
 startFlowServer({
-  flows: [retrieverFlow, indexerFlow],
+  flows: [retrieverFlow, indexerFlow, indexerUrlFlow],
 });

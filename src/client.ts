@@ -68,14 +68,16 @@ export class VoiceflowClient {
   }
 
   async uploadDocument(document: { type: "url"; url: string } | { type: "file"; file: File }): Promise<void> {
-    const url = "https://api.voiceflow.com/v1/knowledge-base/docs/upload?maxChunkSize=1000";
     const headers = {
       accept: "application/json",
       Authorization: `${this.clientParams.apiKey}`,
     };
 
+    let url: string;
     let fetchOptions;
+    
     if (document.type === "url") {
+      url = "https://api.voiceflow.com/v1/knowledge-base/docs/upload?maxChunkSize=1000";
       fetchOptions = {
         method: "POST",
         headers: {
@@ -90,6 +92,7 @@ export class VoiceflowClient {
         }),
       };
     } else {
+      url = "https://api.voiceflow.com/v1/knowledge-base/docs/upload?maxChunkSize=1000";
       const formData = new FormData();
       formData.append("file", document.file);
       fetchOptions = {
@@ -101,7 +104,8 @@ export class VoiceflowClient {
 
     const response = await fetch(url, fetchOptions);
     if (!response.ok) {
-      throw new Error(`VoiceflowClient uploadDocument failed: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`VoiceflowClient uploadDocument failed: ${response.statusText} - ${errorText}`);
     }
   }
 }
