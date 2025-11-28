@@ -43,10 +43,7 @@ export const voiceflowRetrieverRef = (params: {
   });
 };
 
-export function voiceflowRetriever(
-  name: string,
-  client: VoiceflowClient,
-) {
+export function voiceflowRetriever(name: string, client: VoiceflowClient) {
   return retriever(
     {
       name: `voiceflow/${name}`,
@@ -60,7 +57,7 @@ export function voiceflowRetriever(
       };
 
       const question = Array.isArray(content.content)
-        ? content.content.map(doc => doc.text).join(" ")
+        ? content.content.map((doc) => doc.text).join(" ")
         : "";
 
       const results = await client.search(
