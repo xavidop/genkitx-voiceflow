@@ -18,7 +18,6 @@
    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-pr/xavidop/genkitx-voiceflow?color=blue">
    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/xavidop/genkitx-voiceflow">
 </div>
-
 </br>
 
 **`genkitx-voiceflow`** is a community plugin for using Voiceflow Knowledge base in
